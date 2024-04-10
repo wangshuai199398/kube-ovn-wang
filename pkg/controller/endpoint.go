@@ -6,7 +6,7 @@ import (
 	"time"
 
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -108,7 +108,7 @@ func (c *Controller) handleUpdateEndpoint(key string) error {
 
 	ep, err := c.endpointsLister.Endpoints(namespace).Get(name)
 	if err != nil {
-		if errors.IsNotFound(err) {
+		if k8serrors.IsNotFound(err) {
 			return nil
 		}
 		klog.Error(err)
@@ -117,7 +117,7 @@ func (c *Controller) handleUpdateEndpoint(key string) error {
 
 	cachedService, err := c.servicesLister.Services(namespace).Get(name)
 	if err != nil {
-		if errors.IsNotFound(err) {
+		if k8serrors.IsNotFound(err) {
 			return nil
 		}
 		klog.Error(err)
@@ -305,7 +305,7 @@ func (c *Controller) getHealthCheckVip(subnetName, lbVip string) (string, error)
 
 	checkVip, err = c.virtualIpsLister.Get(subnetName)
 	if err != nil {
-		if errors.IsNotFound(err) {
+		if k8serrors.IsNotFound(err) {
 			needCreateHealthCheckVip = true
 		} else {
 			klog.Errorf("failed to get health check vip %s, %v", subnetName, err)
